@@ -1,7 +1,8 @@
+//Abu Koroma
 // CMSC 330 Advanced Programming Languages
 // Project 1 Skeleton
 // UMGC CITE
-// August 2021
+// 4/21/2025
 
 import java.io.*;
 
@@ -37,6 +38,9 @@ class Lexer {
                 return Token.IDENTIFIER;
             case StreamTokenizer.TT_EOF:
                 return Token.EOF;
+            case '"':
+                tokenizer.nextToken();
+                return Token.STRING;
             default:
                 for (int i = 0; i < punctuation.length(); i++)
                     if (token == punctuation.charAt(i))

@@ -44,7 +44,8 @@ class Parser {
     // rectangle -> RECTANGLE_ COLOR number_list AT number_list HEIGHT NUMBER WIDTH NUMBER ';'
 
     private void parseImages(Scene scene, Token imageToken) throws LexicalError, SyntaxError, IOException {
-        int height, width, offset, radius;
+        int height, width, sides, offset, radius;
+        String textContent;
         verifyNextToken(Token.COLOR);
         int[] colors = getNumberList(3);
         Color color = new Color(colors[0], colors[1], colors[2]);
@@ -70,22 +71,36 @@ class Parser {
             Rectangle rectangle = new Rectangle(color, point, height, width);
             scene.addImage(rectangle);
         } else if (imageToken == Token.PARALLELOGRAM) {
-            verifyNextToken(Token.HEIGHT);
+            int[] secondPoints = getNumberList(2);
+            Point lowerRight = new Point(secondPoints[0], secondPoints[1]);
+            verifyNextToken(Token.OFFSET);
             verifyNextToken(Token.NUMBER);
-            height = lexer.getNumber();
-            verifyNextToken(Token.WIDTH);
-            verifyNextToken(Token.NUMBER);
-            width = lexer.getNumber();
-            Parallelogram parallelogram = new Parallelogram(color, point, point, point.x - point.x);
+            offset = lexer.getNumber();
+            Parallelogram parallelogram = new Parallelogram(color, point, lowerRight, offset);
             scene.addImage(parallelogram);
         } else if (imageToken == Token.REGULAR_POLYGON) {
+            verifyNextToken(Token.SIDES);
+            verifyNextToken(Token.NUMBER);
+            sides = lexer.getNumber();
+            verifyNextToken(Token.RADIUS);
+            verifyNextToken(Token.NUMBER);
+            radius = lexer.getNumber();
+            RegularPolygon regularPolygon = new RegularPolygon(color, sides, point, radius);
+            scene.addImage(regularPolygon);
+        } else if (imageToken == Token.ISOSCELES) {
             verifyNextToken(Token.HEIGHT);
             verifyNextToken(Token.NUMBER);
             height = lexer.getNumber();
             verifyNextToken(Token.WIDTH);
             verifyNextToken(Token.NUMBER);
             width = lexer.getNumber();
-            RegularPolygon regularPolygon = new RegularPolygon();
+            IsoscelesTriangle isoscelesTriangle = new IsoscelesTriangle(color, point, height, width);
+            scene.addImage(isoscelesTriangle);
+        } else if (imageToken == Token.TEXT) {
+            verifyNextToken(Token.STRING);
+            textContent = lexer.getLexeme();
+            Text textImage = new Text(color, point, textContent);
+            scene.addImage(textImage);
         } else {
              throw new SyntaxError(lexer.getLineNo(), "Unexpected image name " + imageToken);
         }

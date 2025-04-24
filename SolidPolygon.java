@@ -10,9 +10,6 @@ import java.awt.*;
 
 public class SolidPolygon extends Polygon_ {
 
-    private int[] xPoints;
-    private int[] yPoints;
-
     public SolidPolygon(Color color, int vertexCount) {
         super(color, vertexCount);
     }
